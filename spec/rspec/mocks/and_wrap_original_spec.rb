@@ -10,6 +10,16 @@ RSpec.describe "and_wrap_original" do
 
     let(:instance) { klass.new }
 
+    if RSpec::Support::RubyFeatures.kw_args_supported?
+      binding.eval(<<-CODE, __FILE__, __LINE__)
+      it "works for methods that accept keyword arguments" do
+        def instance.foo(bar: nil); bar; end
+        allow(instance).to receive(:foo).and_wrap_original { |m, *args| m.call(*args) }
+        expect(instance.foo(bar: "baz")).to eq("baz")
+      end
+      CODE
+    end
+
     shared_examples "using and_wrap_original" do
       it "allows us to modify the results of the original method" do
         expect {

@@ -160,6 +160,8 @@ module RSpec
       #     original_method.call(*args, &block).first(10)
       #   end
       def and_wrap_original(&block)
+        block = block.ruby2_keywords if block.respond_to?(:ruby2_keywords)
+
         wrap_original(__method__, &block)
       end
 
